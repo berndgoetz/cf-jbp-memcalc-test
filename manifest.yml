@@ -1,0 +1,13 @@
+---
+applications:
+- name: memcalc
+  path: build/libs/app.jar
+  memory: 768M
+  instances: 1
+  disk_quota: 1G
+  buildpack: java_buildpack
+  health-check-type: port
+  env:
+    JBP_CONFIG_OPEN_JDK_JRE: "{ jre: { version: 11.+ } }"
+    JAVA_OPTS: >-
+      -Duser.timezone=Europe/Zurich

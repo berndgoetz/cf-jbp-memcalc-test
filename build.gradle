@@ -1,0 +1,101 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.4.RELEASE'
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
+    id 'java'
+    id 'com.adarshr.test-logger' version '1.6.0'
+}
+
+apply plugin: 'maven'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
+
+group = 'berndgoetz'
+version = '0.1'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+ext {
+    set('springCloudVersion', 'Greenwich.SR1')
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+//    implementation('org.springframework.boot:spring-boot-starter-data-ldap')
+
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+    runtimeOnly('org.webjars:bootstrap:3.3.4')
+    runtimeOnly('org.webjars:webjars-locator:0.34')
+
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation('com.github.ben-manes.caffeine:caffeine')
+
+    implementation('org.springframework.cloud:spring-cloud-starter')
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+    implementation('io.springfox:springfox-swagger2:2.9.2')
+    implementation('io.springfox:springfox-swagger-ui:2.9.2')
+
+    // for Java 11, does not work because of outbound connection issues on CF
+    implementation('javax.xml.bind:jaxb-api:2.3.0')
+    implementation('com.sun.xml.bind:jaxb-core:2.3.0')
+    implementation('com.sun.xml.bind:jaxb-impl:2.3.0')
+
+    // tricky one, must be the correct version as in Spring Boot:
+    runtimeOnly('org.slf4j:log4j-over-slf4j:1.7.25')
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly('net.logstash.logback:logstash-logback-encoder:5.3')
+
+    implementation('com.microsoft.azure:applicationinsights-spring-boot-starter:1.1.1')
+    runtimeOnly('com.microsoft.azure:applicationinsights-logging-logback:2.3.0')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.security:spring-security-test')
+    testImplementation('org.json:json:20170516')
+
+    testCompileOnly 'org.projectlombok:lombok'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+configurations {
+    implementation {
+        exclude group: 'org.apache.logging.log4j'
+    }
+}
+
+bootJar {
+    enabled = true
+    archiveName = 'app.jar'
+}
+
+springBoot {
+    // This statement tells the Gradle Spring Boot plugin to generate a file
+    // build/resources/main/META-INF/build-info.properties that is picked up by Spring Boot to display via /info
+    // endpoint.
+    buildInfo()
+}

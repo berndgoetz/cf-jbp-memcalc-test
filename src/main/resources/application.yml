@@ -1,0 +1,21 @@
+info:
+  app:
+    name: CF Java Buildpack Mem Calc Tester
+server:
+  port: ${port:8080}
+spring:
+  application:
+    name: memcalc
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,beans,caches,env
+  info.git.mode: full
+logging:
+  level:
+    org.springframework: info
+    org.springframework.security: info
+azure:
+  application-insights:
+    instrumentation-key: id
